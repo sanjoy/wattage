@@ -1,0 +1,14 @@
+Wattage
+=======
+
+Runtime estimation of power characteristics of a program.  This is a
+work in progress.
+
+
+Building
+========
+
+Wattage uses Intel's Pin [1] framework.  To build symlink the
+directory containing Pin to ./pin and run `make'.
+
+[1] http://software.intel.com/en-us/articles/pin-a-dynamic-binary-instrumentation-tool
