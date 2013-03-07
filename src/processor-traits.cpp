@@ -90,3 +90,24 @@ bool ProcessorTraits::read_from(FILE *fptr, char **error) {
 
   return true;
 }
+
+void ProcessorTraits::print_fields(FILE *file) {
+#define PRINT_TRAITS_UNDIRECTED(name)           \
+  fprintf(file,                                 \
+          "%s_individual\n"                     \
+          "%s_hamming\n",                       \
+          # name, # name);
+#define PRINT_TRAITS_DIRECTED(name)             \
+  fprintf(file,                                 \
+          "%s_individual_read\n"                \
+          "%s_individual_write\n"               \
+          "%s_hamming_read\n"                   \
+          "%s_hamming_write\n",                 \
+          # name, # name, # name, # name);
+
+  UNDIRECTED_PROPERTIES(PRINT_TRAITS_UNDIRECTED);
+  DIRECTED_PROPERTIES(PRINT_TRAITS_DIRECTED);
+
+#undef PRINT_TRAITS_DIRECTED
+#undef PRINT_TRAITS_UNDIRECTED
+}

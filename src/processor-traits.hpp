@@ -56,6 +56,8 @@ class ProcessorTraits {
   ProcessorTraits();
 
   bool read_from(std::FILE *file, char **error);
+
+  static void print_fields(std::FILE *file);
 };
 
 };

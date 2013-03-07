@@ -16,6 +16,9 @@ KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
 KNOB<string> KnobTraitsFile(KNOB_MODE_WRITEONCE, "pintool",
                             "t", "default.traits",
                             "specify the file to read processor traits from");
+KNOB<bool> PrintTraitFields(KNOB_MODE_WRITEONCE, "pintool",
+                            "p", "false",
+                            "print the trait field names");
 
 int ShowUsage() {
   cerr << "wattage (sanjoy@playingwithpointers.com)" << endl;
@@ -130,6 +133,10 @@ Baton *PINCallbacks::baton_ = NULL;
 
 int main(int argc, char **argv) {
   if (PIN_Init(argc, argv)) return ShowUsage();
+  if (PrintTraitFields.Value()) {
+    ProcessorTraits::print_fields(stdout);
+    return 0;
+  }
 
   Baton *baton = Baton::create(KnobTraitsFile.Value().c_str(),
                                KnobOutputFile.Value().c_str());
