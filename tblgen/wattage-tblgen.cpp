@@ -73,24 +73,24 @@ void InstrItineraryTableEmitter::emit_for_xed(const char *xed) {
   Record *inst = find_inst_for_name(xed);
   string iic_value;
   if (inst == NULL) {
-    iic_value = "IIC_UNKNOWN";
+    iic_value = "UNKNOWN";
   } else {
     iic_value =
         inst->getValueAsDef(StringRef("Itinerary"))->getNameInitAsString();
   }
 
-  output_ << "  itinerary_table_[XED_ICLASS_" << xed << "] = "
-          << iic_value << ";\n";
+  output_ << "  F(" << xed << ", "
+          << string(iic_value.begin() + 4, iic_value.end()) << ") \\\n";
 }
 
 bool InstrItineraryTableEmitter::run() {
-  output_ << "void ProcessorTraits::populate_itinerary_table() {\n";
+  output_ << "#define IIC_INST_PAIRS(F) \\\n";
 
 #define PROCESS_XED_OPCODE(xed_name) emit_for_xed( # xed_name);
   INTEL_XED_OPCODES(PROCESS_XED_OPCODE);
 #undef PROCESS_XED_OPCODE
 
-  output_ << "}\n";
+  output_ << "\n";
 
   return false;
 }
