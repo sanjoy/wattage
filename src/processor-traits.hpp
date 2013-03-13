@@ -1,6 +1,8 @@
 #ifndef __PROCESSOR_TRAITS__HPP
 #define __PROCESSOR_TRAITS__HPP
 
+#include "processor-traits-itinerary-types.inc"
+
 #include "pin.H"
 
 #include <cassert>
@@ -54,6 +56,14 @@ class ProcessorTraits {
 
  public:
   ProcessorTraits();
+
+  enum InstrItinClass {
+    IIC_UNKNOWN,
+#define DECL_IIC_ENUM(name) IIC_ ## name ,
+    INSTR_ITIN_CLASSES(DECL_IIC_ENUM)
+#undef DECL_IIC_ENUM
+    IIC_COUNT
+  };
 
   bool read_from(std::FILE *file, char **error);
 

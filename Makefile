@@ -1,11 +1,11 @@
 include pintool.config
 
-HEADERS=src/estimators.hpp src/processor-traits.hpp
+HEADERS=src/estimators.hpp src/processor-traits.hpp processor-traits-itinerary-types.inc
 
 ifeq ($(mode), release)
-	CXXFLAGS=-Wall -Werror -O3 -DNDEBUG
+	CXXFLAGS=-Wall -Werror -O3 -DNDEBUG -I./
 else
-	CXXFLAGS=-Wall -Werror -g3
+	CXXFLAGS=-Wall -Werror -g3 -I./
 endif
 
 
@@ -16,6 +16,9 @@ wattage.so: estimators.o pintool.o processor-traits.o
 
 %.o: src/%.cpp $(HEADERS)
 	$(CXX) $(COPT) $(CXXFLAGS) $(PIN_CXXFLAGS) $< -o $@
+
+processor-traits-itinerary-types.inc: wattage-tblgen
+	./run-tblgen.sh -gen-itinerary-enum > $@
 
 LLVM_CXXFLAGS=$(shell $(llvm_config) --cxxflags)
 LLVM_LIBDIR=$(shell $(llvm_config) --libdir)
@@ -28,4 +31,4 @@ wattage-tblgen: tblgen/wattage-tblgen.cpp tblgen/intel-xed-opcodes.hpp
 	g++ $< $(CXXFLAGS) $(LLVM_CXXFLAGS) -I$(LLVM_INCLUDE_DIR) -I$(LLVM_INCLUDE_DIR_GENERATED) $(LLVM_LIBS) -L$(LLVM_LIBDIR) $(LLVM_LDFLAGS) -fno-rtti -o $@
 
 clean:
-	rm wattage.so estimators.o pintool.o wattage-tblgen
+	rm wattage.so *.o wattage-tblgen processor-traits-itinerary-types.inc
