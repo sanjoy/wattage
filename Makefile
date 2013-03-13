@@ -25,7 +25,7 @@ LLVM_INCLUDE_DIR=$(shell $(llvm_config) --includedir)
 LLVM_INCLUDE_DIR_GENERATED="$(shell $(llvm_config) --obj-root)/include"
 
 wattage-tblgen: tblgen/wattage-tblgen.cpp tblgen/intel-xed-opcodes.hpp
-	g++ $< $(CXXFLAGS) $(LLVM_CXXFLAGS) -I$(LLVM_INCLUDE_DIR) -I$(LLVM_INCLUDE_DIR_GENERATED) $(LLVM_LIBS) -L$(LLVM_LIBDIR) $(LLVM_LDFLAGS) -o $@
+	g++ $< $(CXXFLAGS) $(LLVM_CXXFLAGS) -I$(LLVM_INCLUDE_DIR) -I$(LLVM_INCLUDE_DIR_GENERATED) $(LLVM_LIBS) -L$(LLVM_LIBDIR) $(LLVM_LDFLAGS) -fno-rtti -o $@
 
 clean:
 	rm wattage.so estimators.o pintool.o wattage-tblgen
