@@ -14,9 +14,23 @@ using namespace std;
 
 namespace {
 
-class InstrItineraryEmitter {
+enum ActionType {
+  GenItineraryEnum,
+  GenItineraryTable
+};
+
+cl::opt<ActionType>
+Action(cl::desc("Action to perform:"),
+       cl::values(clEnumValN(GenItineraryEnum, "gen-itinerary-enum",
+                             "Generate enum values for Itineraries"),
+                  clEnumValN(GenItineraryTable, "gen-itinerary-table",
+                             "Generate a function to populate itinerary "
+                             "tables"),
+                  clEnumValEnd));
+
+class InstrItineraryTableEmitter {
  public:
-  InstrItineraryEmitter(RecordKeeper &record_keeper, raw_ostream &output)
+  InstrItineraryTableEmitter(RecordKeeper &record_keeper, raw_ostream &output)
       : record_keeper_(record_keeper),
         output_(output) {
     instructions_ = record_keeper.getAllDerivedDefinitions("I");
@@ -33,7 +47,7 @@ class InstrItineraryEmitter {
   void emit_for_xed(const char *xed);
 };
 
-Record *InstrItineraryEmitter::find_inst_for_name(const char *name) {
+Record *InstrItineraryTableEmitter::find_inst_for_name(const char *name) {
   vector<Record *>::const_iterator index = instructions_.begin();
   size_t position = 0;
 
@@ -55,7 +69,7 @@ Record *InstrItineraryEmitter::find_inst_for_name(const char *name) {
   return *index;
 }
 
-void InstrItineraryEmitter::emit_for_xed(const char *xed) {
+void InstrItineraryTableEmitter::emit_for_xed(const char *xed) {
   Record *inst = find_inst_for_name(xed);
   string iic_value;
   if (inst == NULL) {
@@ -69,7 +83,7 @@ void InstrItineraryEmitter::emit_for_xed(const char *xed) {
           << iic_value << ";\n";
 }
 
-bool InstrItineraryEmitter::run() {
+bool InstrItineraryTableEmitter::run() {
   output_ << "void ProcessorTraits::populate_itinerary_table() {\n";
 
 #define PROCESS_XED_OPCODE(xed_name) emit_for_xed( # xed_name);
@@ -81,8 +95,46 @@ bool InstrItineraryEmitter::run() {
   return false;
 }
 
+class ItineraryEnumEmitter {
+ public:
+  ItineraryEnumEmitter(RecordKeeper &record_keeper, raw_ostream &output)
+      : record_keeper_(record_keeper),
+        output_(output) { }
+
+  bool run();
+
+ private:
+  RecordKeeper &record_keeper_;
+  raw_ostream &output_;
+};
+
+bool ItineraryEnumEmitter::run() {
+  vector<Record *> itineraries =
+      record_keeper_.getAllDerivedDefinitions("InstrItinClass");
+  output_ << "#define INSTR_ITIN_CLASSES(F) \\\n";
+
+  for (vector<Record *>::const_iterator I = itineraries.begin(),
+                                        E = itineraries.end();
+       I != E;
+       ++I) {
+    string name = (*I)->getName();
+    if (name != "NoItinerary") {
+      output_ << "  F(" << string(name.begin() + 4, name.end()) << ") \\\n";
+    }
+  }
+  output_ << "\n";
+
+  return false;
+}
+
 bool TableGenCallback(raw_ostream &output, RecordKeeper &keeper) {
-  return InstrItineraryEmitter(keeper, output).run();
+  switch (Action) {
+    case GenItineraryEnum:
+      return ItineraryEnumEmitter(keeper, output).run();
+    case GenItineraryTable:
+      return InstrItineraryTableEmitter(keeper, output).run();
+  }
+  return true;
 }
 
 }
