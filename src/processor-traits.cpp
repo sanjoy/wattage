@@ -23,6 +23,8 @@ ProcessorTraits::ProcessorTraits() {
 
 #undef INIT_UNDIRECTED_PROPERTY
 #undef INIT_DIRECTED_PROPERTY
+
+  initialize_iic_table();
 }
 
 bool ProcessorTraits::read_from(FILE *fptr, char **error) {
@@ -110,4 +112,10 @@ void ProcessorTraits::print_fields(FILE *file) {
 
 #undef PRINT_TRAITS_DIRECTED
 #undef PRINT_TRAITS_UNDIRECTED
+}
+
+void ProcessorTraits::initialize_iic_table() {
+#define ASSIGN_IIC(inst, iic) iic_table_[XED_ICLASS_ ## inst] = IIC_ ## iic;
+  IIC_INST_PAIRS(ASSIGN_IIC);
+#undef ASSIGN_IIC
 }

@@ -75,12 +75,12 @@ void InstrItineraryTableEmitter::emit_for_xed(const char *xed) {
   if (inst == NULL) {
     iic_value = "UNKNOWN";
   } else {
-    iic_value =
+    string name =
         inst->getValueAsDef(StringRef("Itinerary"))->getNameInitAsString();
+    iic_value = string(name.begin() + 4, name.end());
   }
 
-  output_ << "  F(" << xed << ", "
-          << string(iic_value.begin() + 4, iic_value.end()) << ") \\\n";
+  output_ << "  F(" << xed << ", " << iic_value << ") \\\n";
 }
 
 bool InstrItineraryTableEmitter::run() {

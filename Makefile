@@ -1,6 +1,6 @@
 include pintool.config
 
-HEADERS=src/estimators.hpp src/processor-traits.hpp processor-traits-itinerary-types.inc
+HEADERS=src/estimators.hpp src/processor-traits.hpp processor-traits-itinerary-types.inc processor-traits-instruction-to-itinerary.inc
 
 ifeq ($(mode), release)
 	CXXFLAGS=-Wall -Werror -O3 -DNDEBUG -I./
@@ -19,6 +19,9 @@ wattage.so: estimators.o pintool.o processor-traits.o
 
 processor-traits-itinerary-types.inc: wattage-tblgen
 	./run-tblgen.sh -gen-itinerary-enum > $@
+
+processor-traits-instruction-to-itinerary.inc: wattage-tblgen
+	./run-tblgen.sh -gen-itinerary-table > $@
 
 LLVM_CXXFLAGS=$(shell $(llvm_config) --cxxflags)
 LLVM_LIBDIR=$(shell $(llvm_config) --libdir)

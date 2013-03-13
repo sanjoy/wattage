@@ -2,6 +2,7 @@
 #define __PROCESSOR_TRAITS__HPP
 
 #include "processor-traits-itinerary-types.inc"
+#include "processor-traits-instruction-to-itinerary.inc"
 
 #include "pin.H"
 
@@ -68,6 +69,10 @@ class ProcessorTraits {
   bool read_from(std::FILE *file, char **error);
 
   static void print_fields(std::FILE *file);
+
+ private:
+  void initialize_iic_table();
+  uint16_t iic_table_[XED_ICLASS_LAST];
 };
 
 };
