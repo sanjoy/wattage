@@ -52,7 +52,10 @@ namespace wattage {
 
 class ProcessorTraits {
  public:
-  float base_cpu(OPCODE opcode) { return 100.0f; }
+  float base_cpu(OPCODE opcode) {
+    return get_iic_weight(static_cast<xed_iclass_enum_t>(opcode));
+  }
+
   float base_mem(INS ins) { return 10.0f; }
   float functional_unit_change(INS i0, INS i1) { return 0.0f; }
 

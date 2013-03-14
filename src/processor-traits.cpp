@@ -27,6 +27,7 @@ ProcessorTraits::ProcessorTraits() {
 #undef INIT_DIRECTED_PROPERTY
 
   initialize_iic_table();
+  initialize_category_table();
 }
 
 bool ProcessorTraits::read_from(FILE *fptr, char **error) {
