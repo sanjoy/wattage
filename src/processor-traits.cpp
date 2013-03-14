@@ -141,7 +141,7 @@ void ProcessorTraits::initialize_category_table() {
   int i;
 
   for (i = 0; i < IIC_COUNT; i++) {
-    iic_category_table_[i] = IIC_DEFAULT;
+    iic_category_table_[i] = CATEGORY_DEFAULT;
   }
 
   PROCESSOR_IIC_CATEGORIES(ASSIGN_IIC, CHANGE_CATEGORY);
@@ -155,6 +155,7 @@ float ProcessorTraits::get_iic_weight(xed_iclass_enum_t opcode) {
   case CATEGORY_ ## caps_name: return category_ ## lower_name ## _weight();
 
   switch (iic_category_table_lookup(iic_table_lookup(opcode))) {
+    case CATEGORY_UNKNOWN: return category_default_weight();
     INSTRUCTION_CATEGORIES(IIC_CATEGORY_CASE);
   }
 #undef IIC_CATEGORY_CASE

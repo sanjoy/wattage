@@ -72,6 +72,7 @@ void Estimator::compute_cost(INS ins, const CONTEXT *context,
 }
 
 void Estimator::process() {
+  process_constants();
   process_imm();
   process_reg();
   process_regfile();
@@ -79,6 +80,11 @@ void Estimator::process() {
   process_ivalue();
   process_daddr();
   process_dvalue();
+}
+
+void Estimator::process_constants() {
+  power_counter_->accumulate(PowerCounter::CPU_INSTR,
+                             traits_->base_cpu(INS_Opcode(current_ins_)));
 }
 
 void Estimator::process_imm() {

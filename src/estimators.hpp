@@ -175,6 +175,7 @@ class Estimator {
  private:
   void process();
 
+  void process_constants();
   void process_imm();
   void process_reg();
   void process_regfile();

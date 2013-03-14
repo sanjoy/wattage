@@ -118,7 +118,7 @@ class ProcessorTraits {
 
   uint8_t iic_category_table_lookup(int index) {
     assert(index >= IIC_UNKNOWN && index < IIC_COUNT);
-    return iic_table_[index];
+    return iic_category_table_[index];
   }
 
   uint16_t iic_table_lookup(xed_iclass_enum_t opcode) {
