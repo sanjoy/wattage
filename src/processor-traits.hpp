@@ -111,6 +111,18 @@ class ProcessorTraits {
 
   void initialize_iic_table();
   void initialize_category_table();
+  float get_iic_weight(xed_iclass_enum_t opcode);
+
+  uint8_t iic_category_table_lookup(int index) {
+    assert(index >= IIC_UNKNOWN && index < IIC_COUNT);
+    return iic_table_[index];
+  }
+
+  uint16_t iic_table_lookup(xed_iclass_enum_t opcode) {
+    int opc = static_cast<int>(opcode);
+    assert(opc > XED_ICLASS_INVALID && opc < XED_ICLASS_LAST);
+    return iic_table_[opc];
+  }
 
   uint16_t iic_table_[XED_ICLASS_LAST];
   uint8_t iic_category_table_[IIC_COUNT];

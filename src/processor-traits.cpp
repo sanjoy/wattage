@@ -149,6 +149,19 @@ void ProcessorTraits::initialize_category_table() {
 #undef CHANGE_CATEGORY
 }
 
+float ProcessorTraits::get_iic_weight(xed_iclass_enum_t opcode) {
+#define IIC_CATEGORY_CASE(caps_name, lower_name)                        \
+  case CATEGORY_ ## caps_name: return category_ ## lower_name ## _weight();
+
+  switch (iic_category_table_lookup(iic_table_lookup(opcode))) {
+    INSTRUCTION_CATEGORIES(IIC_CATEGORY_CASE);
+  }
+#undef IIC_CATEGORY_CASE
+
+  assert(0 && "not reached");
+  return 0.0f;
+}
+
 void ProcessorTraits::print_fields(FILE *file) {
 #define PRINT_TRAITS_UNDIRECTED(name)           \
   fprintf(file,                                 \
