@@ -168,6 +168,8 @@ void Estimator::process_ivalue() {
   const int base_count =
       Bitwise::pop_count_buffer(current_inst_buffer, current_isize_);
   const int hamming_count =
+      INS_Valid(previous_ins_) ?
+      0 :
       Bitwise::xor_count_buffer(prev_inst_buffer, previous_isize_,
                                 current_inst_buffer, current_isize_);
 
