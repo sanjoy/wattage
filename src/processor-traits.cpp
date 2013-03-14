@@ -1,5 +1,7 @@
 #include "processor-traits.hpp"
 
+#include "processor-iic-categories.hpp"
+
 #include <cstring>
 #include <map>
 #include <string>
@@ -44,11 +46,18 @@ bool ProcessorTraits::read_from(FILE *fptr, char **error) {
   dict[#name "_hamming_read"] = &name ## _hamming_read_;                \
   dict[#name "_hamming_write"] = &name ## _hamming_write_;
 
+#define INSERT_INSTR_CATEGORY(caps_name, lower_name) do {       \
+    float *address = &category_ ## lower_name ## _weight_;      \
+    dict["category_" #lower_name "_weight"] = address;          \
+  } while(false);
+
   UNDIRECTED_PROPERTIES(INSERT_UNDIRECTED_PROPERTY);
   DIRECTED_PROPERTIES(INSERT_DIRECTED_PROPERTY);
+  INSTRUCTION_CATEGORIES(INSERT_INSTR_CATEGORY);
 
 #undef INSERT_DIRECTED_PROPERTY
 #undef INSERT_UNDIRECTED_PROPERTY
+#undef INSERT_INSTR_CATEGORY
 
   while (true) {
     buffer[kBufferLen - 2] = '\n';
@@ -93,6 +102,53 @@ bool ProcessorTraits::read_from(FILE *fptr, char **error) {
   return true;
 }
 
+void ProcessorTraits::dump(FILE *file) {
+#define PRINT_PROPERTY(name) fprintf(file, "%s %f\n", #name, name());
+#define PRINT_UNDIRECTED_PROPERTY(name)         \
+  PRINT_PROPERTY(name ## _individual);          \
+  PRINT_PROPERTY(name ## _hamming);
+#define PRINT_DIRECTED_PROPERTY(name)           \
+  PRINT_PROPERTY(name ## _individual_read);     \
+  PRINT_PROPERTY(name ## _individual_write);    \
+  PRINT_PROPERTY(name ## _hamming_read);        \
+  PRINT_PROPERTY(name ## _hamming_write);
+#define PRINT_INST_CATEGORY_WT(caps_name, small_name)   \
+  PRINT_PROPERTY(category_ ## small_name ## _weight)
+
+  UNDIRECTED_PROPERTIES(PRINT_UNDIRECTED_PROPERTY);
+  DIRECTED_PROPERTIES(PRINT_DIRECTED_PROPERTY);
+  INSTRUCTION_CATEGORIES(PRINT_INST_CATEGORY_WT);
+
+#undef PRINT_INST_CATEGORY_WT
+#undef PRINT_DIRECTED_PROPERTY
+#undef PRINT_UNDIRECTED_PROPERTY
+#undef PRINT_PROPERTY
+}
+
+void ProcessorTraits::initialize_iic_table() {
+#define ASSIGN_IIC(inst, iic) iic_table_[XED_ICLASS_ ## inst] = IIC_ ## iic;
+  IIC_INST_PAIRS(ASSIGN_IIC);
+#undef ASSIGN_IIC
+}
+
+void ProcessorTraits::initialize_category_table() {
+#define CHANGE_CATEGORY(new_cat) current_category = CATEGORY_ ## new_cat;
+#define ASSIGN_IIC(iic_name)                                    \
+  iic_category_table_[IIC_ ## iic_name] = current_category;
+
+  uint8_t current_category = 0;
+  int i;
+
+  for (i = 0; i < IIC_COUNT; i++) {
+    iic_category_table_[i] = IIC_DEFAULT;
+  }
+
+  PROCESSOR_IIC_CATEGORIES(ASSIGN_IIC, CHANGE_CATEGORY);
+
+#undef ASSIGN_IIC
+#undef CHANGE_CATEGORY
+}
+
 void ProcessorTraits::print_fields(FILE *file) {
 #define PRINT_TRAITS_UNDIRECTED(name)           \
   fprintf(file,                                 \
@@ -106,16 +162,14 @@ void ProcessorTraits::print_fields(FILE *file) {
           "%s_hamming_read\n"                   \
           "%s_hamming_write\n",                 \
           # name, # name, # name, # name);
+#define PRINT_TRAITS_INST_CATEGORY(caps_name, lower_name)       \
+  fprintf(file, "category_%s_weight\n", # lower_name);
 
   UNDIRECTED_PROPERTIES(PRINT_TRAITS_UNDIRECTED);
   DIRECTED_PROPERTIES(PRINT_TRAITS_DIRECTED);
+  INSTRUCTION_CATEGORIES(PRINT_TRAITS_INST_CATEGORY);
 
 #undef PRINT_TRAITS_DIRECTED
 #undef PRINT_TRAITS_UNDIRECTED
-}
-
-void ProcessorTraits::initialize_iic_table() {
-#define ASSIGN_IIC(inst, iic) iic_table_[XED_ICLASS_ ## inst] = IIC_ ## iic;
-  IIC_INST_PAIRS(ASSIGN_IIC);
-#undef ASSIGN_IIC
+#undef PRINT_TRAITS_INST_CATEGORY
 }

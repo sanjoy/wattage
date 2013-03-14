@@ -11,14 +11,18 @@ using namespace wattage;
 
 namespace {
 KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
-                            "o", "wattage.out",
+                            "output", "wattage.out",
                             "specify output file name");
 KNOB<string> KnobTraitsFile(KNOB_MODE_WRITEONCE, "pintool",
-                            "t", "default.traits",
+                            "traits-file", "default.traits",
                             "specify the file to read processor traits from");
-KNOB<bool> PrintTraitFields(KNOB_MODE_WRITEONCE, "pintool",
-                            "p", "false",
-                            "print the trait field names");
+KNOB<bool> KnobPrintTraitNames(KNOB_MODE_WRITEONCE, "pintool",
+                               "print-trait-names", "false",
+                               "print the trait field names");
+KNOB<bool> KnobPrintTraitValues(KNOB_MODE_WRITEONCE, "pintool",
+                                "print-trait-values", "false",
+                                "read the trait values from the traits file "
+                                "and print them out");
 
 int ShowUsage() {
   cerr << "wattage (sanjoy@playingwithpointers.com)" << endl;
@@ -129,12 +133,34 @@ class PINCallbacks {
 
 Baton *PINCallbacks::baton_ = NULL;
 
+void PrintTraitValues(FILE *output) {
+  string file_name = KnobTraitsFile.Value();
+  fprintf(output, "using traits file `%s`\n", file_name.c_str());
+
+  FILE *file = fopen(file_name.c_str(), "r");
+  if (file == NULL) {
+    fprintf(output, "error: could not open traits file.\n");
+    return;
+  }
+
+  ProcessorTraits traits;
+  char *error_msg = NULL;
+  if (traits.read_from(file, &error_msg)) traits.dump(output);
+  else fprintf(output, "error: %s.\n", error_msg);
+
+  fclose(file);
+}
+
 }
 
 int main(int argc, char **argv) {
   if (PIN_Init(argc, argv)) return ShowUsage();
-  if (PrintTraitFields.Value()) {
+  if (KnobPrintTraitNames.Value()) {
     ProcessorTraits::print_fields(stdout);
+    return 0;
+  }
+  if (KnobPrintTraitValues.Value()) {
+    PrintTraitValues(stdout);
     return 0;
   }
 
