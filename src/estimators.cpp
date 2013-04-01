@@ -189,6 +189,10 @@ void Estimator::process_ivalue() {
       PowerCounter::MEM_INSTR,
       traits_->inst_value_mem_wt_individual() * base_count +
       traits_->inst_value_mem_wt_hamming() * hamming_count);
+  power_counter_->accumulate(
+      PowerCounter::MEM_INSTR,
+      traits_->base_mem_value_wt() * base_count +
+      traits_->base_mem_word_width_wt() * current_isize_);
 }
 
 void Estimator::process_daddr() {
@@ -238,4 +242,8 @@ void Estimator::process_dvalue() {
   power_counter_->accumulate(
       PowerCounter::MEM_DATA,
       base_count * individual_wt_mem + hamming_count * hamming_wt_mem);
+  power_counter_->accumulate(
+      PowerCounter::MEM_DATA,
+      base_count * traits_->base_mem_value_wt() +
+      current_dsize_ * traits_->base_mem_word_width_wt());
 }
