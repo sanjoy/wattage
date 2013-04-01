@@ -13,10 +13,10 @@ PowerCounter::PowerCounter() {
 void PowerCounter::print(FILE *stream) const {
   float total = 0.0;
   for (int i = 0; i < COUNTER_TYPE_LEN; i++) {
-    fprintf(stream, "[%s] = %f\n", counter_type_to_cstring(i), counters_[i]);
+    fprintf(stream, "[%s] = %.2f\n", counter_type_to_cstring(i), counters_[i]);
     total += counters_[i];
   }
-  fprintf(stream, "[TOTAL] = %f\n", total);
+  fprintf(stream, "[TOTAL] = %.2f\n", total);
 }
 
 const char *PowerCounter::counter_type_to_cstring(int type) const {
