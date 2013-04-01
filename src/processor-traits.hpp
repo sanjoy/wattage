@@ -9,6 +9,10 @@
 #include <cassert>
 #include <cstdio>
 
+#define GENERIC_PROPERTIES(F)                   \
+  F(base_mem_value_wt)                          \
+  F(base_mem_word_width_wt)
+
 #define UNDIRECTED_PROPERTIES(F)                \
   F(imm_operand_cpu_wt)                         \
   F(reg_cpu_wt)                                 \
@@ -56,7 +60,6 @@ class ProcessorTraits {
     return get_iic_weight(static_cast<xed_iclass_enum_t>(opcode));
   }
 
-  float base_mem(INS ins) { return 10.0f; }
   float functional_unit_change(INS i0, INS i1) { return 0.0f; }
 
 #define DEFINE_PROPERTY(name)                   \
@@ -78,6 +81,7 @@ class ProcessorTraits {
 #define DEFINE_INSTR_CATEGORY(caps_name, lower_name)    \
   DEFINE_PROPERTY(category_ ## lower_name ## _weight)
 
+  GENERIC_PROPERTIES(DEFINE_PROPERTY);
   UNDIRECTED_PROPERTIES(DEFINE_UNDIRECTED_PROPERTY);
   DIRECTED_PROPERTIES(DEFINE_DIRECTED_PROPERTY);
   INSTRUCTION_CATEGORIES(DEFINE_INSTR_CATEGORY);

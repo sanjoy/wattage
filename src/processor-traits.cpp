@@ -10,6 +10,8 @@ using namespace wattage;
 using namespace std;
 
 ProcessorTraits::ProcessorTraits() {
+#define INIT_GENERIC_PRROPERTY(name) name ## _ = 0.0f;
+
 #define INIT_UNDIRECTED_PROPERTY(name)           \
   name ## _individual_ = 0.0f;                   \
   name ## _hamming_ = 0.0f;                      \
@@ -20,6 +22,7 @@ ProcessorTraits::ProcessorTraits() {
   name ## _hamming_read_ = 0.0f;                \
   name ## _hamming_write_ = 0.0f;
 
+  GENERIC_PROPERTIES(INIT_GENERIC_PRROPERTY);
   UNDIRECTED_PROPERTIES(INIT_UNDIRECTED_PROPERTY);
   DIRECTED_PROPERTIES(INIT_DIRECTED_PROPERTY);
 
@@ -37,6 +40,8 @@ bool ProcessorTraits::read_from(FILE *fptr, char **error) {
 
   map<string, float *> dict;
 
+#define INSERT_GENERIC_PROPERTY(name) dict[#name] = &name ## _;
+
 #define INSERT_UNDIRECTED_PROPERTY(name)                \
   dict[#name "_individual"] = &name ## _individual_;    \
   dict[#name "_hamming"] = &name ## _hamming_;
@@ -52,6 +57,7 @@ bool ProcessorTraits::read_from(FILE *fptr, char **error) {
     dict["category_" #lower_name "_weight"] = address;          \
   } while(false);
 
+  GENERIC_PROPERTIES(INSERT_GENERIC_PROPERTY)
   UNDIRECTED_PROPERTIES(INSERT_UNDIRECTED_PROPERTY);
   DIRECTED_PROPERTIES(INSERT_DIRECTED_PROPERTY);
   INSTRUCTION_CATEGORIES(INSERT_INSTR_CATEGORY);
@@ -116,6 +122,7 @@ void ProcessorTraits::dump(FILE *file) {
 #define PRINT_INST_CATEGORY_WT(caps_name, small_name)   \
   PRINT_PROPERTY(category_ ## small_name ## _weight)
 
+  GENERIC_PROPERTIES(PRINT_PROPERTY);
   UNDIRECTED_PROPERTIES(PRINT_UNDIRECTED_PROPERTY);
   DIRECTED_PROPERTIES(PRINT_DIRECTED_PROPERTY);
   INSTRUCTION_CATEGORIES(PRINT_INST_CATEGORY_WT);
@@ -165,6 +172,7 @@ float ProcessorTraits::get_iic_weight(xed_iclass_enum_t opcode) {
 }
 
 void ProcessorTraits::print_fields(FILE *file) {
+#define PRINT_TRAITS_GENERIC(name) fprintf(file, "%s\n", # name);
 #define PRINT_TRAITS_UNDIRECTED(name)           \
   fprintf(file,                                 \
           "%s_individual\n"                     \
@@ -180,10 +188,12 @@ void ProcessorTraits::print_fields(FILE *file) {
 #define PRINT_TRAITS_INST_CATEGORY(caps_name, lower_name)       \
   fprintf(file, "category_%s_weight\n", # lower_name);
 
+  GENERIC_PROPERTIES(PRINT_TRAITS_GENERIC);
   UNDIRECTED_PROPERTIES(PRINT_TRAITS_UNDIRECTED);
   DIRECTED_PROPERTIES(PRINT_TRAITS_DIRECTED);
   INSTRUCTION_CATEGORIES(PRINT_TRAITS_INST_CATEGORY);
 
+#undef PRINT_TRAITS_GENERIC
 #undef PRINT_TRAITS_DIRECTED
 #undef PRINT_TRAITS_UNDIRECTED
 #undef PRINT_TRAITS_INST_CATEGORY
