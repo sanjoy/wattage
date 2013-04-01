@@ -46,7 +46,7 @@ int RegfileBuffer::xor_and_assign(const CONTEXT *context) {
   for (int i = 0; i < kTrackedRegistersLen; i++) {
     intptr_t current =
         static_cast<intptr_t>(PIN_GetContextReg(context, regs[i]));
-    xor_count =
+    xor_count +=
         Bitwise::pop_count_64(static_cast<uint64_t>(buffer_[i] ^ current));
     buffer_[i] = current;
   }
