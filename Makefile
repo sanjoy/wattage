@@ -8,6 +8,12 @@ else
 	CXXFLAGS=-Wall -Werror -g3 -I./
 endif
 
+ifeq ($(deterministic), true)
+	DET_CXXFLAGS=-DDETERMINISTIC_FACTORS_ONLY
+else
+	DET_CXXFLAGS=
+endif
+
 
 all:: wattage.so wattage-tblgen
 
@@ -15,7 +21,7 @@ wattage.so: estimators.o pintool.o processor-traits.o
 	$(PIN_LD) $(PIN_LDFLAGS) $(LINK_DEBUG) $^ $(PIN_LPATHS) $(PIN_LIBS) $(DBG) -o $@
 
 %.o: src/%.cpp $(HEADERS)
-	$(CXX) $(COPT) $(CXXFLAGS) $(PIN_CXXFLAGS) $< -o $@
+	$(CXX) $(COPT) $(CXXFLAGS) $(PIN_CXXFLAGS) $(DET_CXXFLAGS) $< -o $@
 
 processor-traits-itinerary-types.inc: wattage-tblgen
 	./run-tblgen.sh -gen-itinerary-enum > $@

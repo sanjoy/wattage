@@ -78,11 +78,14 @@ void Estimator::process() {
   process_constants();
   process_imm();
   process_reg();
+  process_ivalue();
+
+#ifndef DETERMINISTIC_FACTORS_ONLY
   process_regfile();
   process_iaddr();
-  process_ivalue();
   process_daddr();
   process_dvalue();
+#endif // DETERMINISTIC_FACTORS_ONLY
 }
 
 void Estimator::process_constants() {
