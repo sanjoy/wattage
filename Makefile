@@ -40,4 +40,5 @@ wattage-tblgen: tblgen/wattage-tblgen.cpp tblgen/intel-xed-opcodes.hpp
 	g++ $< $(CXXFLAGS) $(LLVM_CXXFLAGS) -I$(LLVM_INCLUDE_DIR) -I$(LLVM_INCLUDE_DIR_GENERATED) $(LLVM_LIBS) -L$(LLVM_LIBDIR) $(LLVM_LDFLAGS) -fno-rtti -o $@
 
 clean:
-	rm wattage.so *.o wattage-tblgen processor-traits-itinerary-types.inc
+	rm wattage.so *.o wattage-tblgen processor-traits-itinerary-types.inc \
+	processor-traits-instruction-to-itinerary.inc
