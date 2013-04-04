@@ -135,6 +135,6 @@ class ProcessorTraits {
   uint8_t iic_category_table_[IIC_COUNT];
 };
 
-};
+}
 
 #endif // __PROCESSOR_TRAITS__HPP
