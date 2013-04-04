@@ -12,6 +12,7 @@ PowerCounter::PowerCounter() {
 
 void PowerCounter::print(FILE *stream) const {
   float total = 0.0;
+  fprintf(stream, "[INST_COUNT] = %ld\n", inst_count_);
   for (int i = 0; i < COUNTER_TYPE_LEN; i++) {
     fprintf(stream, "[%s] = %.2f\n", counter_type_to_cstring(i), counters_[i]);
     total += counters_[i];
@@ -57,15 +58,14 @@ int RegfileBuffer::xor_and_assign(const CONTEXT *context) {
 void Estimator::compute_cost(INS ins, const CONTEXT *context,
                              intptr_t memory_address,
                              uint32_t dsize) {
-  if (!INS_IsOriginal(ins)) return;
-
   current_ins_ = ins;
-  current_isize_ = INS_Size(ins);
+  current_isize_ = INS_IsOriginal(ins) ? INS_Size(ins) : 0;
   reg_context_ = context;
   current_daddr_ = memory_address;
   current_dsize_ = dsize;
   current_iaddr_ = INS_Address(ins);
 
+  power_counter_->inst_executed();
   process();
 
   previous_ins_ = current_ins_;

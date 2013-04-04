@@ -23,6 +23,11 @@ class PowerCounter {
   void accumulate(Type type, float value) {
     counters_[type] += value;
   }
+  void inst_executed() {
+    inst_count_++;
+  }
+
+  long inst_count() const { return inst_count_; }
 
   typedef float *iterator;
   typedef const float *const_iterator;
@@ -38,6 +43,7 @@ class PowerCounter {
 
  private:
   float counters_[COUNTER_TYPE_LEN];
+  long inst_count_;
   const char *counter_type_to_cstring(int type) const;
 };
 
