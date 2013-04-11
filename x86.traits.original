@@ -1,0 +1,60 @@
+imm_operand_cpu_wt_individual			 8.13
+imm_operand_cpu_wt_hamming			 4.73
+
+reg_cpu_wt_individual				 8.13
+reg_cpu_wt_hamming				 4.73
+
+reg_value_cpu_wt_individual			 48
+reg_value_cpu_wt_hamming			 219.9
+
+inst_addr_cpu_wt_individual			 48
+inst_addr_cpu_wt_hamming			 219.9
+
+data_addr_cpu_wt_individual			 48
+data_addr_cpu_wt_hamming			 219.9
+
+inst_addr_mem_wt_individual			 -19.2
+inst_addr_mem_wt_hamming			 138.9
+
+inst_value_mem_wt_individual			 -115.3
+inst_value_mem_wt_hamming			 57.7
+
+data_addr_mem_wt_individual			 -19.2
+data_addr_mem_wt_hamming			 138.9
+
+data_value_cpu_wt_individual_read		 11.0
+data_value_cpu_wt_individual_write		 26.4
+
+data_value_cpu_wt_hamming_read			 -5.5
+data_value_cpu_wt_hamming_write			 224.1
+
+data_value_mem_wt_individual_read		 -115.3
+data_value_mem_wt_individual_write		 -60.4
+
+data_value_mem_wt_hamming_read			 57.7
+data_value_mem_wt_hamming_write			 22.8
+
+category_default_weight				 0
+category_generic_alu_weight			 0
+category_integer_multiplication_weight		 0
+category_integer_division_weight		 0
+category_float_division_weight			 0
+category_unary_arithmetic_operation_weight	 0
+category_binary_arithmetic_operation_weight	 0
+category_shift_rotate_weight			 0
+category_double_shift_weight			 0
+category_conditional_move_weight		 0
+category_set_weight				 0
+category_jump_weight				 0
+category_loop_weight				 0
+category_call_weight				 0
+category_return_weight				 0
+category_sign_extension_weight			 0
+category_zero_extension_weight			 0
+category_sse_weight				 0
+category_mmx_weight				 0
+category_system_weight				 0
+category_nop_weight				 0
+
+base_mem_value_wt				 0
+base_mem_word_width_wt				 0
