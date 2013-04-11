@@ -57,18 +57,21 @@ int RegfileBuffer::xor_and_assign(const CONTEXT *context) {
 
 void Estimator::compute_cost(INS ins, const CONTEXT *context,
                              intptr_t memory_address,
-                             uint32_t dsize) {
+                             uint32_t dsize,
+                             intptr_t current_iaddr,
+                             uint32_t current_isize) {
   current_ins_ = ins;
-  current_isize_ = INS_IsOriginal(ins) ? INS_Size(ins) : 0;
   reg_context_ = context;
   current_daddr_ = memory_address;
   current_dsize_ = dsize;
-  current_iaddr_ = INS_Address(ins);
+
+  current_iaddr_ = current_iaddr;
+  current_isize_ = current_isize;
 
   power_counter_->inst_executed();
   process();
 
-  previous_ins_ = current_ins_;
+  previous_inst_was_branch_or_call_ = INS_IsBranchOrCall(current_ins_);
   previous_isize_ = current_isize_;
   previous_daddr_ = current_daddr_;
   previous_iaddr_ = current_iaddr_;
@@ -173,17 +176,14 @@ void Estimator::process_iaddr() {
 
 void Estimator::process_ivalue() {
   const uint8_t *prev_inst_buffer =
-      reinterpret_cast<uint8_t *>(INS_Address(previous_ins_));
+      reinterpret_cast<uint8_t *>(previous_iaddr_);
   const uint8_t *current_inst_buffer =
-      reinterpret_cast<uint8_t *>(INS_Address(current_ins_));
+      reinterpret_cast<uint8_t *>(current_iaddr_);
 
   const int base_count =
       Bitwise::pop_count_buffer(current_inst_buffer, current_isize_);
-  const int hamming_count =
-      INS_Valid(previous_ins_) ?
-      0 :
-      Bitwise::xor_count_buffer(prev_inst_buffer, previous_isize_,
-                                current_inst_buffer, current_isize_);
+  const int hamming_count = Bitwise::xor_count_buffer(
+      prev_inst_buffer, previous_isize_, current_inst_buffer, current_isize_);
 
   power_counter_->accumulate(
       PowerCounter::MEM_INSTR,

@@ -110,21 +110,24 @@ class PINCallbacks {
     if (INS_IsMemoryRead(ins)) {
       INS_InsertCall(ins, IPOINT_BEFORE, AFUNPTR(compute_cost_INS),
                      IARG_ADDRINT, ins, IARG_CONTEXT, IARG_MEMORYREAD_EA,
-                     IARG_MEMORYREAD_SIZE, IARG_END);
+                     IARG_MEMORYREAD_SIZE, IARG_ADDRINT, INS_Address(ins),
+                     IARG_UINT32, INS_Size(ins), IARG_END);
     } else if (INS_IsMemoryWrite(ins)) {
       INS_InsertCall(ins, IPOINT_BEFORE, AFUNPTR(compute_cost_INS),
                      IARG_ADDRINT, ins, IARG_CONTEXT, IARG_MEMORYWRITE_EA,
-                     IARG_MEMORYWRITE_SIZE, IARG_END);
+                     IARG_MEMORYWRITE_SIZE, IARG_ADDRINT, INS_Address(ins),
+                     IARG_UINT32, INS_Size(ins), IARG_END);
     } else {
       INS_InsertCall(ins, IPOINT_BEFORE, AFUNPTR(compute_cost_INS),
                      IARG_ADDRINT, ins, IARG_CONTEXT, IARG_ADDRINT, NULL,
-                     IARG_UINT32, 0, IARG_END);
+                     IARG_UINT32, 0, IARG_ADDRINT, INS_Address(ins),
+                     IARG_UINT32, INS_Size(ins), IARG_END);
     }
   }
 
   static void compute_cost_INS(INS ins, const CONTEXT *ctx, intptr_t daddr,
-                               uint32_t dsize) {
-    baton()->estimator()->compute_cost(ins, ctx, daddr, dsize);
+                               uint32_t dsize, intptr_t iaddr, uint32_t isize) {
+    baton()->estimator()->compute_cost(ins, ctx, daddr, dsize, iaddr, isize);
   }
 
   static Baton *baton() { return baton_; }

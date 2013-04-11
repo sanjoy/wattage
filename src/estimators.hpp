@@ -164,7 +164,6 @@ class Estimator {
   Estimator(PowerCounter *power_counter, ProcessorTraits *traits) :
       power_counter_(power_counter),
       traits_(traits),
-      previous_ins_(INS_Invalid()),
       current_ins_(INS_Invalid()),
       previous_isize_(0),
       current_isize_(0),
@@ -173,10 +172,14 @@ class Estimator {
       current_daddr_(0),
       current_dsize_(0),
       previous_iaddr_(0),
-      current_iaddr_(0) { }
+      current_iaddr_(0),
+      previous_inst_was_branch_or_call_(true) { }
 
   void compute_cost(INS ins, const CONTEXT *context, intptr_t memory_address,
-                    uint32_t dsize);
+                    uint32_t dsize, intptr_t current_iaddr,
+                    uint32_t current_isize);
+
+  string old_name_;
 
  private:
   void process();
@@ -193,7 +196,6 @@ class Estimator {
   PowerCounter *power_counter_;
   ProcessorTraits *traits_;
 
-  INS previous_ins_;
   INS current_ins_;
   int previous_isize_;
   int current_isize_;
@@ -206,6 +208,7 @@ class Estimator {
 
   intptr_t previous_iaddr_;
   intptr_t current_iaddr_;
+  bool previous_inst_was_branch_or_call_;
 
   BitBuffer<64> imm_buffer_;
   BitBuffer<64> reg_buffer_;
